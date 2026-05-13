@@ -1,0 +1,142 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.contenedor-juego {
+    width: 100%;
+    max-width: 720px;
+    background: #111827;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 32px;
+    color: #22c55e;
+}
+
+.descripcion {
+    margin-bottom: 18px;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.panel-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.tarjeta-info {
+    flex: 1;
+    min-width: 150px;
+    background: #1f2937;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid #374151;
+}
+
+.tarjeta-info span {
+    display: block;
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+
+.tarjeta-info strong {
+    font-size: 24px;
+    color: #facc15;
+}
+
+canvas {
+    width: 100%;
+    max-width: 500px;
+    background: #020617;
+    border: 4px solid #22c55e;
+    border-radius: 16px;
+    display: block;
+    margin: 0 auto 20px auto;
+}
+
+.controles {
+    display: grid;
+    grid-template-columns: repeat(3, 90px);
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.controles button,
+.acciones button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: #22c55e;
+    color: #052e16;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.controles button:hover,
+.acciones button:hover {
+    transform: scale(1.05);
+    background: #86efac;
+}
+
+.vacio {
+    visibility: hidden;
+}
+
+.acciones {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.acciones .secundario {
+    background: #38bdf8;
+    color: #082f49;
+}
+
+.mensaje {
+    margin-top: 14px;
+    color: #e2e8f0;
+    min-height: 24px;
+    font-weight: bold;
+}
+
+@media (max-width: 520px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    .controles {
+        grid-template-columns: repeat(3, 75px);
+    }
+
+    .controles button,
+    .acciones button {
+        padding: 10px;
+    }
+}

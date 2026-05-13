@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego de la Serpiente - Taller</title>
+   <link rel="stylesheet" href="serpiente.css">
+</head>
+<body>
+  <main class="contenedor-juego">
+    <h1>🐍 Juego de la Serpiente</h1>
+    <p class="descripcion">
+      Agrega una descripción creativa
+    </p>
+
+    <section class="panel-info">
+      <div class="tarjeta-info">
+        <span>Puntaje</span>
+        <strong id="puntaje">0</strong>
+      </div>
+      <div class="tarjeta-info">
+        <span>Estado</span>
+        <strong id="estado">Listo</strong>
+      </div>
+    </section>
+
+    <canvas id="canvasJuego" width="500" height="500"></canvas>
+
+    <section class="controles">
+      <button class="vacio">-</button>
+      <button onclick="cambiarDireccion('arriba')">⬆️</button>
+      <button class="vacio">-</button>
+
+      <button onclick="cambiarDireccion('izquierda')">⬅️</button>
+      <button onclick="pausarJuego()">⏸️</button>
+      <button onclick="cambiarDireccion('derecha')">➡️</button>
+
+      <button class="vacio">-</button>
+      <button onclick="cambiarDireccion('abajo')">⬇️</button>
+      <button class="vacio">-</button>
+    </section>
+
+    <section class="acciones">
+      <button onclick="iniciarJuego()">Iniciar</button>
+      <button class="secundario" onclick="reiniciarJuego()">Reiniciar</button>
+    </section>
+
+    <p id="mensaje" class="mensaje">Presiona iniciar para comenzar.</p>
+  </main>
+
+  <script src="serpiente.js"></script>
+</body>
+</html>
