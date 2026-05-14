@@ -1,100 +1,306 @@
-// 1. Capturamos el canvas y su contexto de dibujo
-    const canvas = document.getElementById("canvasJuego");
-    const ctx = canvas.getContext("2d");
+// 🎮 CONFIGURACIÓN Y CONSTANTES
+// ============================================================================
+const TAMANIO_CELDA = 25;
 
-    // =========================
-    // FUNCIONES DE DIBUJO
-    // =========================
+// ============================================================================
+// 🖼️ ELEMENTOS DEL DOM Y CONTEXTO
+// ============================================================================
+const canvas = document.getElementById("canvasJuego");
+const ctx = canvas.getContext("2d");
 
-    function limpiarCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+// ============================================================================
+// 🐍 ESTADO DEL JUEGO
+// ============================================================================
+const serpiente = [
+  { x: 14, y: 13 },
+  { x: 14, y: 14 },
+  { x: 14, y: 15 },
+  { x: 14, y: 16 },
+  { x: 14, y: 17 }
+];
+let intervaloSerpiente;
+let direccionActual = "derecha";
 
-    function dibujarTodo() {
-      limpiarCanvas();
-      dibujarTablero();
-    }
+let comida = { x: 5, y: 5 };
 
-    // =========================
-    // PARTE 2 — TABLERO
-    // =========================
+let puntaje = 0
 
-    // PASO 4 — Tamaño de cada celda
-    const TAMANIO_CELDA = 25;
+// ============================================================================
+// 🚀 INICIALIZACIÓN
+// ============================================================================
+// Primera pintura del juego al cargar la página
+dibujarTodo();
 
-    // PASO 5 — Función que dibuja el tablero
-    function dibujarTablero() {
+// ============================================================================
+// 🎨 FUNCIONES DE DIBUJO
+// ============================================================================
 
-      // PASO 6 — Color de líneas
-      ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
+/**
+ * Función principal de renderizado
+ */
+function dibujarTodo() {
+  limpiarCanvas();
+  dibujarTablero();
+  // pintarCoordenada(25, 25); // Debug
+  dibujarComida()
+  dibujarSerpiente();
+}
 
-      // PASO 9 — Líneas VERTICALES
-      for (let x = 0; x <= canvas.width; x += TAMANIO_CELDA) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
+/**
+ * Limpia completamente el canvas
+ */
+function limpiarCanvas() {
+  // 0, 0: Empieza a borrar desde la esquina superior izquierda
+  // canvas.width, canvas.height: Borra hasta el ancho y alto total
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-      // PASO 10 — Líneas HORIZONTALES
-      for (let y = 0; y <= canvas.height; y += TAMANIO_CELDA) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
+/**
+ * Dibuja el tablero completo (líneas y números)
+ */
+function dibujarTablero() {
+  dibujarLineasVerticales();
+  dibujarLineasHorizontales();
+  dibujarNumerosEnY();
+  dibujarNumerosEnX();
+}
 
-    }
+/**
+ * Dibuja las líneas verticales de la cuadrícula
+ */
+function dibujarLineasVerticales() {
+  for (let x = 0; x <= canvas.width; x += TAMANIO_CELDA) {
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+}
 
-    // =========================
-    // PARTE 3 — PINTAR PARTES
-    // =========================
+/**
+ * Dibuja las líneas horizontales de la cuadrícula
+ */
+function dibujarLineasHorizontales() {
+  for (let y = 0; y <= canvas.height; y += TAMANIO_CELDA) {
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.2)";
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+}
 
-    // PASO 1 — Función que pinta un cuadrado en la cuadrícula
-    // lineaX: columna de la cuadrícula (eje horizontal)
-    // lineaY: fila de la cuadrícula (eje vertical)
-    function pintarParte(lineaX, lineaY) {
+/**
+ * Dibuja los números en el eje Y (izquierda)
+ */
+function dibujarNumerosEnY() {
+  ctx.fillStyle = "white";
+  ctx.font = "12px Arial";
+  let contador = 0;
+  
+  for (let y = 0; y <= canvas.height; y += TAMANIO_CELDA) {
+    ctx.fillText(contador, 5, y + 12);
+    contador++;
+  }
+}
 
-      // Calculamos la posición real en píxeles dentro del canvas
-      const pixelX = lineaX * TAMANIO_CELDA;
-      const pixelY = lineaY * TAMANIO_CELDA;
+/**
+ * Dibuja los números en el eje X (superior)
+ */
+function dibujarNumerosEnX() {
+  ctx.fillStyle = "white";
+  ctx.font = "12px Arial";
+  let contador = 0;
+  
+  for (let x = 0; x <= canvas.width; x += TAMANIO_CELDA) {
+    ctx.fillText(contador, x + 2, 12);
+    contador++;
+  }
+}
 
-      // PASO 2 — Color de relleno y dibujar relleno
-      ctx.fillStyle = "#22c55e";
-      ctx.fillRect(pixelX, pixelY, TAMANIO_CELDA, TAMANIO_CELDA);
+/**
+ * Pinta una celda en coordenadas lógicas (x, y)
+ * @param {number} x - Coordenada X lógica
+ * @param {number} y - Coordenada Y lógica
+ * @param {string} color - Color de relleno
+ */
+function pintarCoordenada(x, y, color) {
+  const posicionX = x * TAMANIO_CELDA;
+  const posicionY = y * TAMANIO_CELDA;
 
-      // PASO 3 — Color de borde y dibujar borde
-      ctx.strokeStyle = "#052e16";
-      ctx.strokeRect(pixelX, pixelY, TAMANIO_CELDA, TAMANIO_CELDA);
-    }
+  if (posicionX < canvas.width && posicionY < canvas.height) {
+    ctx.fillStyle = color;
+    ctx.fillRect(posicionX, posicionY, TAMANIO_CELDA, TAMANIO_CELDA);
 
-    // =========================
-    // PRUEBAS OBLIGATORIAS
-    // =========================
+    ctx.strokeStyle = "red";
+    ctx.strokeRect(posicionX, posicionY, TAMANIO_CELDA, TAMANIO_CELDA);
+  }
+}
 
-    // Sobrescribimos dibujarTodo para incluir las pruebas SIN modificar el código original
-    const _dibujarTodoOriginal = dibujarTodo;
-    dibujarTodo = function() {
-      _dibujarTodoOriginal();
+/**
+ * Dibuja la serpiente completa
+ */
+function dibujarSerpiente() {
+  const colorCabeza = "red";
+  
+  for (let i = 0; i < serpiente.length; i++) {
+    const serp = serpiente[i];
+    const color = (i === 0) ? colorCabeza : "yellow";
+    pintarCoordenada(serp.x, serp.y, color);
+  }
+}
 
-      // ✅ PRUEBA 1 — Celda (5,5)
-      pintarParte(5, 5);
+// ============================================================================
+// 🕹️ FUNCIONES DE MOVIMIENTO
+// ============================================================================
 
-      // ✅ PRUEBA 2 — Celda (10,2)
-      pintarParte(10, 2);
+/**
+ * Mueve la serpiente hacia la derecha
+ */
+function moverDerecha() {
+  let nuevoElemento = { x: 0, y: 0 };
+  if ((serpiente[0].x + 2) * TAMANIO_CELDA > canvas.width) return;
+  
+  nuevoElemento.x=serpiente[0].x+1
+  nuevoElemento.y=serpiente[0].y
 
-      // ✅ PRUEBA 3 — Pegado al borde INFERIOR (fila 23 es la última)
-      pintarParte(7, 23);
+  serpiente.unshift(nuevoElemento)
+  serpiente.pop()
+}
 
-      // ✅ PRUEBA 4 — Pegado al borde DERECHO (columna 23 es la última)
-      pintarParte(23, 10);
+/**
+ * Mueve la serpiente hacia la izquierda
+ */
+function moverIzquierda() {
+  let nuevoElemento = { x: 0, y: 0 };
+  
+  if ((serpiente[0].x - 1) * TAMANIO_CELDA < 0) return;
+  
+  nuevoElemento.x=serpiente[0].x-1
+  nuevoElemento.y=serpiente[0].y
 
-      // ✅ PRUEBA 5 — Pegado al borde IZQUIERDO (columna 0)
-      pintarParte(0, 15);
+  serpiente.unshift(nuevoElemento)
+  serpiente.pop()
+}
 
-      // ✅ PRUEBA 6 — Esquina inferior-derecha (la (0,0) sería demasiado fácil)
-      pintarParte(23, 23);
-    };
+/**
+ * Mueve la serpiente hacia abajo
+ */
+function moverAbajo() {
+  let nuevoElemento = { x: 0, y: 0 };
+  
+  if ((serpiente[0].y + 2) * TAMANIO_CELDA > canvas.height) return;
+  
+  nuevoElemento.x=serpiente[0].x
+  nuevoElemento.y=serpiente[0].y+1
 
-    // Primera pintura — va AL FINAL para que todas las funciones estén definidas
-    dibujarTodo();
+  serpiente.unshift(nuevoElemento)
+  serpiente.pop()
+  
+}
+
+/**
+ * Mueve la serpiente hacia arriba
+ */
+function moverArriba() {
+  let nuevoElemento = { x: 0, y: 0 };
+  
+  if ((serpiente[0].y - 1) * TAMANIO_CELDA < 0) return;
+  
+  nuevoElemento.x=serpiente[0].x
+  nuevoElemento.y=serpiente[0].y-1
+
+  serpiente.unshift(nuevoElemento)
+  serpiente.pop()
+}
+
+// ============================================================================
+// 🎮 CONTROL DE DIRECCIÓN Y EVENTOS
+// ============================================================================
+
+/**
+ * Cambia la dirección de la serpiente y redibuja
+ * @param {string} direccion - "derecha" | "izquierda" | "abajo" | "arriba"
+ */
+function cambiarDireccion(direccion) {
+  direccionActual=direccion
+}
+
+/**
+ * Listener para controlar la serpiente con las flechas del teclado
+ */
+window.addEventListener("keydown", (evento) => {
+  switch (evento.key) {
+    case "ArrowRight":
+      cambiarDireccion("derecha");
+      break;
+    case "ArrowLeft":
+      cambiarDireccion("izquierda");
+      break;
+    case "ArrowUp":
+      cambiarDireccion("arriba");
+      break;
+    case "ArrowDown":
+      cambiarDireccion("abajo");
+      break;
+  }
+});
+
+function iniciarJuego(){
+  intervaloSerpiente = setInterval(moverSerpiente, 300)
+}
+
+function pausarJuego(){
+  clearInterval(intervaloSerpiente)
+}
+
+function moverSerpiente(){ 
+  let atrapada = comidaAtrapada()
+  let nuevoElemento = {x: serpiente[0].x, y: serpiente[0].y}
+  switch (direccionActual) {
+    case "derecha":
+      moverDerecha();
+      nuevoElemento.x++
+      break;
+    case "izquierda":
+      moverIzquierda();
+      nuevoElemento.x--
+      break;
+    case "abajo":
+      moverAbajo();
+      nuevoElemento.y++
+      break;
+    case "arriba":
+      moverArriba();
+      nuevoElemento.y--
+      break;
+  }
+  if(atrapada){
+    serpiente.unshift(nuevoElemento) 
+    aumentarPuntaje()
+    generarNuevaPosicionComida()
+  }
+  dibujarTodo();
+}
+
+function dibujarComida() {
+  pintarCoordenada(comida.x, comida.y, "green");
+}
+
+function generarNuevaPosicionComida() {
+  comida.x = Math.floor(Math.random() * (canvas.width / TAMANIO_CELDA));
+  comida.y = Math.floor(Math.random() * (canvas.height / TAMANIO_CELDA));
+}
+
+function comidaAtrapada(){
+  if(comida.x == serpiente[0].x && serpiente[0].y == comida.y)
+    return true
+  else 
+    return false
+}
+
+function aumentarPuntaje(){
+  puntaje++
+  document.getElementById("puntaje").innerText = puntaje
+}
