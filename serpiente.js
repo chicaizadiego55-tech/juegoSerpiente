@@ -83,8 +83,44 @@ function dibujarTablero() {
 
     ctx.stroke();
   }
+  dibujarNumerosEnY();
+  dibujarNumerosEnX();
 }
 
+/**
+ * Dibuja los números en el eje Y (izquierda)
+ */
+function dibujarNumerosEnY() {
+  ctx.fillStyle = "white";
+  ctx.font = "12px Arial";
+  let contador = 0;
+  
+  for (let y = 0; y <= canvas.height; y += TAMANIO_CELDA) {
+    ctx.fillText(contador, 5, y + 12);
+    contador++;
+  }
+}
+
+/**
+ * Dibuja los números en el eje X (superior)
+ */
+function dibujarNumerosEnX() {
+  ctx.fillStyle = "white";
+  ctx.font = "12px Arial";
+  let contador = 0;
+  
+  for (let x = 0; x <= canvas.width; x += TAMANIO_CELDA) {
+    ctx.fillText(contador, x + 2, 12);
+    contador++;
+  }
+}
+
+/**
+ * Pinta una celda en coordenadas lógicas (x, y)
+ * @param {number} x - Coordenada X lógica
+ * @param {number} y - Coordenada Y lógica
+ * @param {string} color - Color de relleno
+ */
 function pintarCoordenada(x, y, color) {
 
   const posicionX = x * TAMANIO_CELDA;
@@ -112,6 +148,10 @@ function dibujarSerpiente() {
       pintarCoordenada(serp.x, serp.y, "yellow");
     }
   }
+}
+
+function dibujarComida() {
+  pintarCoordenada(comida.x, comida.y, "green");
 }
 
 function dibujarComida() {
